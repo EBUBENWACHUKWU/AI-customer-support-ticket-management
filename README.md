@@ -115,6 +115,12 @@ The n8n workflow export is included in this repository:
 
 You can review the workflow structure and import it into your own n8n instance after configuring the required credentials and integrations.
 
+### Supabase Ticket Database
+
+![Supabase Ticket Table](supabase-ticket-table.png)
+
+The Supabase database stores customer support requests, AI-generated classifications, priority levels, sentiment analysis, escalation requirements, ticket status, and suggested responses.
+
 
 ## Portfolio Disclaimer
 
