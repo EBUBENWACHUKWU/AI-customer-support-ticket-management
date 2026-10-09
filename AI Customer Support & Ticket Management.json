@@ -1,0 +1,385 @@
+{
+  "name": "AI Customer Support & Ticket Management",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "customer-support",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -880,
+        -16
+      ],
+      "id": "f66eb146-173f-4d30-bbfe-32a7b3c65eab",
+      "name": "Receive Customer Support Request",
+      "webhookId": "fad9dd32-431b-4e07-8ef4-9964b5431771"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an AI customer support analyst.\n\nAnalyze the following customer support request.\n\nCustomer Name:\n{{ $json.body.customer_name }}\n\nCustomer Email:\n{{ $json.body.customer_email }}\n\nCustomer Message:\n{{ $json.body.message }}\n\nDetermine the following:\n\n1. category\n2. intent\n3. priority\n4. sentiment\n5. requires_human\n6. suggested_response\n\nRules:\n\n- category should be one of: Billing, Technical Support, Account, Shipping, Subscription, or Other.\n- priority must be one of: Low, Medium, High, Critical.\n- sentiment must be one of: Positive, Neutral, Negative.\n- requires_human must be true for refunds, duplicate charges, account security issues, angry customers, or complex technical problems.\n- suggested_response must be a professional response to the customer.\n- Return ONLY valid JSON.",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -576,
+        -16
+      ],
+      "id": "ebb5be51-2b26-44ac-8dc9-f77dbc28b9ac",
+      "name": "AI Customer Support Analyzer"
+    },
+    {
+      "parameters": {
+        "options": {
+          "maxTokens": 2000
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        176
+      ],
+      "id": "f84780e2-8f1c-4e8a-a07e-9149f96815b6",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "Ko6evi3I9NEMSKPX",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "6e5c226f-9e14-4326-ba23-e742a7996cd2",
+              "leftValue": "={{ $json.requires_human }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        0,
+        -16
+      ],
+      "id": "ec616e70-e2ef-4ef8-b64a-3d3299f00e9a",
+      "name": "Human Escalation Decision"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = JSON.parse(\n  $json.output.replace(/```json|```/g, '').trim()\n);\n\nreturn [\n  {\n    json: {\n      ...$json,\n      ...data\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        352
+      ],
+      "id": "b7a02c51-f6c1-47ef-bb3e-98843d117ed9",
+      "name": "Parse AI Support Analysis"
+    },
+    {
+      "parameters": {
+        "sendTo": "ebubechukwu1982@gmail.com",
+        "subject": "Customer Support Escalation - High Priority",
+        "emailType": "text",
+        "message": "=A customer support request requires human attention.  Customer: {{ $json.customer_name }}  Email: {{ $json.customer_email }}  Category: {{ $json.category }}  Intent: {{ $json.intent }}  Priority: {{ $json.priority }}  Sentiment: {{ $json.sentiment }}  Customer Message: {{ $('Receive Customer Support Request').item.json.body.message }}  Suggested Response: {{ $json.suggested_response }}  Please review this request and take the appropriate action.  AI Customer Support Automation",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        704,
+        -96
+      ],
+      "id": "5fb5ea2a-081d-4241-85d4-cf22214c604f",
+      "name": "Notify Human Support Agent",
+      "webhookId": "f3d55b7c-7488-4a42-bba2-10c96c31c65b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "FfnB1CDA1Gy38aXf",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Receive Customer Support Request').item.json.body.customer_email }}",
+        "subject": "=Your Support Request - {{ $json.category }}",
+        "emailType": "text",
+        "message": "=Hello {{ $('Receive Customer Support Request').item.json.body.customer_name }},  Thank you for contacting our support team.  We received your request regarding:  {{ $json.intent }}  Our system has reviewed your request and determined that it can be handled automatically.  Here is our response:  {{ $json.suggested_response }}  If you need further assistance, please reply to this email and our support team will be happy to help.  Best regards, Customer Support Team",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        944,
+        224
+      ],
+      "id": "6f9ffafa-ece1-4223-bf5f-a06a6e797d24",
+      "name": "Send Automated Customer Response",
+      "webhookId": "7c69158c-cd93-4a1f-8c03-ed037155d359",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "FfnB1CDA1Gy38aXf",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "support_tickets",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "customer_name",
+              "fieldValue": "={{ $('Receive Customer Support Request').item.json.body.customer_name }}"
+            },
+            {
+              "fieldId": "message",
+              "fieldValue": "={{ $('Receive Customer Support Request').item.json.body.message }}"
+            },
+            {
+              "fieldId": "category",
+              "fieldValue": "={{ $json.category }}"
+            },
+            {
+              "fieldId": "intent",
+              "fieldValue": "={{ $json.intent }}"
+            },
+            {
+              "fieldId": "priority",
+              "fieldValue": "={{ $json.priority }}"
+            },
+            {
+              "fieldId": "sentiment",
+              "fieldValue": "={{ $json.sentiment }}"
+            },
+            {
+              "fieldId": "requires_human",
+              "fieldValue": "={{ $json.requires_human }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "Open"
+            },
+            {
+              "fieldId": "ai_response",
+              "fieldValue": "={{ $json.suggested_response }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        432,
+        -112
+      ],
+      "id": "3d97fecc-df95-49f3-82dc-563d2f95222c",
+      "name": "Create a row1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "7ZEG3RUg7fImvO0k",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "support_tickets",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "customer_name",
+              "fieldValue": "={{ $('Receive Customer Support Request').item.json.body.customer_name }}"
+            },
+            {
+              "fieldId": "customer_email",
+              "fieldValue": "={{ $('Receive Customer Support Request').item.json.body.customer_email }}"
+            },
+            {
+              "fieldId": "message",
+              "fieldValue": "={{ $('Receive Customer Support Request').item.json.body.message }}"
+            },
+            {
+              "fieldId": "category",
+              "fieldValue": "={{ $json.category }}"
+            },
+            {
+              "fieldId": "intent",
+              "fieldValue": "={{ $json.intent }}"
+            },
+            {
+              "fieldId": "priority",
+              "fieldValue": "={{ $json.priority }}"
+            },
+            {
+              "fieldId": "sentiment",
+              "fieldValue": "={{ $json.sentiment }}"
+            },
+            {
+              "fieldId": "requires_human",
+              "fieldValue": "={{ $json.requires_human }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "Open"
+            },
+            {
+              "fieldId": "ai_response",
+              "fieldValue": "={{ $json.suggested_response }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        240,
+        32
+      ],
+      "id": "5a600232-5c09-49ce-a239-55b2678bc527",
+      "name": "Create a row2",
+      "credentials": {
+        "supabaseApi": {
+          "id": "7ZEG3RUg7fImvO0k",
+          "name": "Supabase account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Receive Customer Support Request": {
+      "main": [
+        [
+          {
+            "node": "AI Customer Support Analyzer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Customer Support Analyzer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Customer Support Analyzer": {
+      "main": [
+        [
+          {
+            "node": "Parse AI Support Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI Support Analysis": {
+      "main": [
+        [
+          {
+            "node": "Human Escalation Decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Human Escalation Decision": {
+      "main": [
+        [
+          {
+            "node": "Create a row1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create a row2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Human Support Agent": {
+      "main": [
+        []
+      ]
+    },
+    "Send Automated Customer Response": {
+      "main": [
+        []
+      ]
+    },
+    "Create a row1": {
+      "main": [
+        [
+          {
+            "node": "Notify Human Support Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a row2": {
+      "main": [
+        [
+          {
+            "node": "Send Automated Customer Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "09944c90-a675-4688-9db4-d6b0b18e9c53",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8c97443191be770d747480364798fa4497351371ff52b21d6be9300582b6c7ef"
+  },
+  "id": "iIzpj8ZCFFemiYOo",
+  "tags": []
+}
