@@ -97,6 +97,33 @@ Do not publish API secrets, service-role keys, passwords, or real customer infor
 - More advanced analytics and reporting
 - Production-grade monitoring and error handling
 
+- ## Project Screenshots
+
+### Customer Support Dashboard
+
+![AI Customer Support Dashboard](dashboard-overview.png)
+
+### n8n Automation Workflow
+
+![n8n Workflow Overview](n8n-workflow-overview.png)
+
+## Workflow Export
+
+The n8n workflow export is included in this repository:
+
+[`ai-customer-support-workflow.json`](ai-customer-support-workflow.json)
+
+You can review the workflow structure and import it into your own n8n instance after configuring the required credentials and integrations.
+
+
 ## Portfolio Disclaimer
+
+This project was developed for educational and portfolio demonstration purposes to showcase AI-powered workflow automation, customer support ticket management, and dashboard development.
+
+The system uses AI-generated classifications and response suggestions, which may require human review before being used in real customer interactions.
+
+Before production deployment, the system should be configured with appropriate authentication, database access controls, secure credential management, error handling, and data privacy safeguards.
+
+This project should be tested with demonstration data before being connected to real customer information.
 
 This project demonstrates AI-assisted customer support automation and ticket management. It is a portfolio project and should be security-reviewed and appropriately configured before production use with real customer information.
