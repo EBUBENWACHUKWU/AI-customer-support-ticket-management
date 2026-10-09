@@ -1,0 +1,160 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Customer Support Dashboard</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header class="dashboard-header">
+        <h1>AI Customer Support Dashboard</h1>
+        <p>Monitor and manage customer support tickets</p>
+    </header>
+
+    <main class="dashboard-container">
+
+        <!-- Dashboard Summary Cards -->
+        <section class="stats-grid">
+
+            <div class="stat-card">
+                <h3>Total Tickets</h3>
+                <p id="totalTickets">0</p>
+            </div>
+
+            <div class="stat-card">
+                <h3>Open Tickets</h3>
+                <p id="openTickets">0</p>
+            </div>
+
+            <div class="stat-card">
+                <h3>High / Critical</h3>
+                <p id="highPriorityTickets">0</p>
+            </div>
+
+            <div class="stat-card">
+                <h3>Human Review</h3>
+                <p id="humanReviewTickets">0</p>
+            </div>
+
+            <div class="stat-card">
+                <h3>In Progress</h3>
+                <p id="statusInProgressCount">0</p>
+            </div>
+
+            <div class="stat-card">
+                <h3>Resolved</h3>
+                <p id="statusResolvedCount">0</p>
+            </div>
+
+        </section>
+
+        <!-- Support Tickets -->
+        <section class="tickets-section">
+
+            <div class="section-header">
+                <h2>Support Tickets</h2>
+
+                <div class="dashboard-controls">
+
+                    <div class="search-container">
+                        <input
+                            type="text"
+                            id="ticketSearch"
+                            placeholder="Search by customer, email, message, or category..."
+                        >
+                    </div>
+
+                    <select id="ticketFilter">
+                        <option value="all">All Tickets</option>
+                        <option value="open">Open</option>
+                        <option value="high">High / Critical</option>
+                        <option value="human">Human Review</option>
+                        <option value="billing">Billing</option>
+                        <option value="technical">Technical Support</option>
+                        <option value="account">Account</option>
+                        <option value="shipping">Shipping</option>
+                        <option value="subscription">Subscription</option>
+                        <option value="other">Other</option>
+                    </select>
+
+                    <button id="refreshButton">Refresh</button>
+
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Customer</th>
+                        <th>Category</th>
+                        <th>Intent</th>
+                        <th>Priority</th>
+                        <th>Sentiment</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                    </tr>
+                </thead>
+
+                <tbody id="ticketTableBody">
+                    <tr>
+                        <td colspan="7">No tickets loaded yet.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </section>
+
+        <!-- Analytics -->
+        <section class="analytics-grid">
+
+            <div class="analytics-card">
+                <h2>Tickets by Category</h2>
+                <div id="categoryChart"></div>
+            </div>
+
+            <div class="analytics-card">
+                <h2>Tickets by Priority</h2>
+                <div id="priorityChart"></div>
+            </div>
+
+            <div class="analytics-card">
+                <h2>Tickets by Sentiment</h2>
+                <div id="sentimentChart"></div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Ticket Details Modal -->
+    <div id="ticketModal" class="modal">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h2>Ticket Details</h2>
+
+                <button id="closeModal" class="close-button" type="button">
+                    ×
+                </button>
+            </div>
+
+            <div id="ticketDetails">
+                <!-- Ticket information appears here -->
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
+```
